@@ -48,8 +48,8 @@ Transform your text into natural-sounding speech using AWS cloud services. Voice
 
 ### 1. Clone Repository
 ```bash
-git clone <repository-url>
-cd voiceify
+git clone https://github.com/Almighty-yawnn/my-ttsApp.git
+cd terraform
 ```
 
 ### 2. Deploy Infrastructure
