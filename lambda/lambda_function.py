@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     
     text = body.get('text')
     # Get voice from request, default to Kevin if none provided
-    voice_id = body.get('voice', 'Kevin')  # Added voice selection
+    voice_id = body.get('voice', 'Kevin')
     
     # Generate a unique filename using UUID
     filename = f"output/{uuid.uuid4()}.mp3"  # Better unique filename generation

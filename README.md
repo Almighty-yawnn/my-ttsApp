@@ -9,24 +9,34 @@ Transform your text into natural-sounding speech using AWS cloud services. Voice
 - **Download Capability**: Save generated audio files for offline use
 - **Responsive Design**: Works seamlessly across desktop and mobile devices
 - **Serverless Architecture**: Scalable, cost-effective cloud infrastructure
+- **Global CDN**: Optional CloudFront integration for worldwide performance
 
 ## 🏗️ Architecture
 
-```
-Frontend (S3) → API Gateway → Lambda → Polly → S3 Storage
+
+```markdown
+### Basic Architecture
+![Alt text](./frontend/asset/architecture.png)
+
+### Enhanced with CloudFront CDN
+![Alt text](./frontend/asset/enh-architecture.png)
+
+
 ```
 
-- **Frontend**: Static website hosted on S3
+- **Frontend**: Static website hosted on S3 with optional CloudFront CDN
 - **API Gateway**: RESTful API endpoint
 - **Lambda**: Serverless compute for processing
 - **Polly**: AI-powered text-to-speech synthesis
 - **S3**: Audio file storage with pre-signed URLs
+- **CloudFront**: Global content delivery network (optional)
 
 ## 🛠️ Technologies Used
 
 - **Infrastructure**: Terraform (Infrastructure as Code)
 - **Backend**: AWS Lambda (Python), Amazon Polly, S3, API Gateway
 - **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **CDN**: Amazon CloudFront (optional)
 - **Security**: IAM roles and policies, CORS configuration
 
 ## 📋 Prerequisites
@@ -63,8 +73,15 @@ const API_URL = "your-api-gateway-endpoint";
 aws s3 sync frontend/ s3://your-frontend-bucket/
 ```
 
-### 5. Access Application
-Navigate to your S3 website endpoint and start converting text to speech!
+### 5. Setup CloudFront (Optional)
+For global performance enhancement:
+1. Create CloudFront distribution in AWS Console
+2. Set S3 bucket as origin with OAC
+3. Configure caching and error pages
+4. Update S3 bucket policy for CloudFront access
+
+### 6. Access Application
+Navigate to your S3 website endpoint or CloudFront domain and start converting text to speech!
 
 ## 📁 Project Structure
 
@@ -78,12 +95,16 @@ voiceify/
 │   └── assets/             # Icons and images
 ├── lambda/
 │   └── lambda_function.py  # Backend processing logic
-└── terraform/
-    ├── main.tf             # Core infrastructure
-    ├── frontend.tf         # API Gateway and S3 setup
-    ├── variables.tf        # Configuration variables
-    ├── outputs.tf          # Infrastructure outputs
-    └── provider.tf         # AWS provider configuration
+├── terraform/
+│   ├── main.tf             # Core infrastructure
+│   ├── frontend.tf         # API Gateway and S3 setup
+│   ├── variables.tf        # Configuration variables
+│   ├── outputs.tf          # Infrastructure outputs
+│   └── provider.tf         # AWS provider configuration
+└── docs/
+    ├── DEPLOYMENT_GUIDE.md # Detailed deployment steps
+    ├── ARCHITECTURE.md     # System architecture
+    └── PROJECT_DOCUMENTATION.md
 ```
 
 ## 🔧 Configuration
@@ -116,16 +137,36 @@ Approximate monthly costs for moderate usage (1000 requests):
 - API Gateway: $3-4
 - Polly: $4-16 (depending on text length)
 - S3: $1-2
-- **Total**: $9-24/month
+- CloudFront: $1-3 (optional)
+- **Total**: $9-27/month
 
 ## 🔒 Security Features
 
 - IAM roles with least-privilege access
 - CORS configuration for secure cross-origin requests
-- Pre-signed URLs for temporary audio access
+- Pre-signed URLs for temporary audio access (15-minute expiration)
 - Input validation and sanitization
 - No hardcoded credentials
+- CloudFront OAC for secure S3 access
 
+## 🌍 Performance Enhancements
+
+### CloudFront CDN Benefits
+- **Global Edge Locations**: 400+ locations worldwide
+- **Faster Loading**: Static assets cached at edge locations
+- **HTTPS**: Automatic SSL/TLS certificates
+- **Compression**: Gzip compression for faster transfers
+- **DDoS Protection**: Built-in security features
+
+## 🚀 Future Enhancements
+
+- [ ] User authentication and accounts
+- [ ] SSML support for advanced speech control
+- [ ] Batch text processing
+- [ ] Usage analytics dashboard
+- [ ] Mobile applications
+- [x] CloudFront CDN integration
+- [ ] Custom domain with Route 53
 
 ## 🤝 Contributing
 
@@ -135,6 +176,9 @@ Approximate monthly costs for moderate usage (1000 requests):
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open Pull Request
 
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨💻 Author
 

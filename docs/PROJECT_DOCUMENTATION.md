@@ -78,7 +78,17 @@ The decision to adopt a serverless architecture was driven by several key factor
 - Audit trail for security compliance
 - Integration with all AWS services
 
-### 3.6 Terraform
+### 3.6 Amazon CloudFront
+**Rationale**: CloudFront provides global content delivery network capabilities to enhance frontend performance and user experience worldwide. While not part of the core Terraform deployment, it offers significant performance benefits for production use.
+
+**Key Benefits**:
+- Global edge locations for reduced latency
+- Automatic HTTPS with SSL/TLS certificates
+- DDoS protection and security features
+- Gzip compression for faster content delivery
+- Origin Access Control for secure S3 integration
+
+### 3.7 Terraform
 **Rationale**: Terraform enables infrastructure as code, providing version control, reproducibility, and automated deployment of AWS resources.
 
 **Key Benefits**:
@@ -87,7 +97,7 @@ The decision to adopt a serverless architecture was driven by several key factor
 - Plan and apply workflow for safe deployments
 - Multi-cloud support for future flexibility
 
-### 3.7 Frontend Technologies (HTML/CSS/JavaScript)
+### 3.8 Frontend Technologies (HTML/CSS/JavaScript)
 **Rationale**: Vanilla web technologies provide maximum compatibility and performance without framework overhead. The simple nature of the application doesn't require complex state management.
 
 **Key Benefits**:
@@ -101,7 +111,6 @@ The decision to adopt a serverless architecture was driven by several key factor
 ### 4.1 Prerequisites Setup
 
 **Install Required Tools**:
-
 ```bash
 # Install Terraform
 # Download from https://terraform.io/downloads
@@ -113,16 +122,14 @@ The decision to adopt a serverless architecture was driven by several key factor
 ```
 
 **AWS Account Configuration**:
-
 1. Create AWS account if not existing
 2. Generate IAM user with programmatic access
-3. Attach necessary permissions (S3, Lambda, Polly, API Gateway, IAM)
+3. Attach necessary permissions (S3, Lambda, Polly, API Gateway, IAM, CloudFront)
 4. Note Access Key ID and Secret Access Key
 
 ### 4.2 Infrastructure Deployment
 
 **Step 1: Prepare Lambda Function**
-
 ```bash
 cd lambda
 zip lambda_function.zip lambda_function.py
@@ -131,7 +138,6 @@ mv lambda_function.zip ../terraform/
 
 **Step 2: Configure Terraform Variables**
 Create `terraform.tfvars` file:
-
 ```hcl
 access_key = "your-aws-access-key"
 secret_key = "your-aws-secret-key"
@@ -141,7 +147,6 @@ frontend_bucket_name = "your-unique-frontend-bucket"
 ```
 
 **Step 3: Deploy Infrastructure**
-
 ```bash
 cd terraform
 terraform init
@@ -168,7 +173,64 @@ const API_URL = "your-api-gateway-endpoint-from-terraform-output";
 aws s3 sync frontend/ s3://your-frontend-bucket-name/
 ```
 
-### 4.4 Testing and Validation
+### 4.4 CloudFront CDN Setup (Optional Enhancement)
+
+**Step 1: Create CloudFront Distribution**
+1. Navigate to **CloudFront** service in AWS Management Console
+2. Click **Create Distribution**
+3. Configure Origin Settings:
+   - **Origin Domain**: Select your S3 frontend bucket from dropdown
+   - **Origin Path**: Leave empty
+   - **Origin Access**: Select "Origin Access Control settings (recommended)"
+   - **Origin Access Control**: Create new OAC or select existing
+
+**Step 2: Distribution Configuration**
+- **Default Root Object**: Enter `index.html`
+- **Viewer Protocol Policy**: Redirect HTTP to HTTPS
+- **Allowed HTTP Methods**: GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE
+- **Cache Policy**: Use "Caching Optimized" for static content
+
+**Step 3: Error Pages Configuration**
+Add custom error response:
+- **HTTP Error Code**: 403 Forbidden
+- **Customize Error Response**: Yes
+- **Response Page Path**: `/index.html`
+- **HTTP Response Code**: 200 OK
+
+**Step 4: Update S3 Bucket Policy**
+Replace existing bucket policy with CloudFront-specific policy:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCloudFrontServicePrincipal",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::your-frontend-bucket-name/*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::your-account-id:distribution/your-distribution-id"
+        }
+      }
+    }
+  ]
+}
+```
+
+**Step 5: Deploy and Test**
+```bash
+# Deploy updated frontend
+aws s3 sync frontend/ s3://your-frontend-bucket-name/
+
+# Create cache invalidation
+aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"
+```
+
+### 4.5 Testing and Validation
 
 **Step 1: Test API Endpoint**
 ```bash
@@ -178,21 +240,30 @@ curl -X POST your-api-gateway-endpoint \
 ```
 
 **Step 2: Verify Frontend**
-1. Navigate to S3 website endpoint
-2. Enter test text
-3. Select voice option
-4. Generate and verify audio playback
+1. Navigate to S3 website endpoint (basic setup)
+2. Navigate to CloudFront domain (enhanced setup)
+3. Enter test text
+4. Select voice option
+5. Generate and verify audio playback
 
-### 4.5 Monitoring and Maintenance
+**Step 3: Performance Testing**
+- Test loading times from different geographic locations
+- Verify HTTPS certificate functionality
+- Check cache hit rates in CloudFront metrics
+
+### 4.6 Monitoring and Maintenance
 
 **CloudWatch Logs**: Monitor Lambda function execution logs for errors and performance metrics.
 
-**Cost Monitoring**: Set up billing alerts to track usage costs across services.
+**CloudFront Metrics**: Track cache hit ratios, origin requests, and global performance.
 
-**Security Review**: Regularly review IAM permissions and S3 bucket policies for security compliance.
+**Cost Monitoring**: Set up billing alerts to track usage costs across all services.
+
+**Security Review**: Regularly review IAM permissions, S3 bucket policies, and CloudFront configurations.
 
 ## 5. Architecture Flow
 
+### 5.1 Basic Architecture Flow
 1. **User Input**: User enters text and selects voice through web interface
 2. **API Request**: Frontend sends POST request to API Gateway endpoint
 3. **Lambda Trigger**: API Gateway triggers Lambda function with request payload
@@ -203,13 +274,23 @@ curl -X POST your-api-gateway-endpoint \
 8. **Response Return**: API Gateway returns audio URL to frontend
 9. **Audio Playback**: Frontend loads and plays audio using HTML5 audio element
 
+### 5.2 Enhanced Architecture Flow with CloudFront
+1. **Global Access**: Users access application through CloudFront edge locations
+2. **Content Delivery**: Static assets served from nearest edge location
+3. **Cache Optimization**: Frequently accessed content cached globally
+4. **API Processing**: API calls routed directly to API Gateway (bypassing CDN)
+5. **Same Backend Flow**: Identical processing for TTS generation
+6. **Performance Benefits**: Reduced latency and improved user experience
+
 ## 6. Security Considerations
 
 - **IAM Roles**: Lambda execution role has minimal required permissions
 - **CORS Configuration**: Properly configured to allow frontend domain access
-- **Pre-signed URLs**: Temporary access to audio files with expiration
+- **Pre-signed URLs**: Temporary access to audio files with 15-minute expiration
 - **Input Validation**: Text length limits and sanitization in Lambda function
 - **No Hardcoded Credentials**: All credentials managed through environment variables
+- **CloudFront Security**: DDoS protection and WAF integration capabilities
+- **Origin Access Control**: Secure S3 access without public bucket policies
 
 ## 7. Cost Optimization
 
@@ -217,13 +298,38 @@ curl -X POST your-api-gateway-endpoint \
 - **Polly**: Pay per character processed
 - **S3**: Pay for storage and requests
 - **API Gateway**: Pay per API call
-- **Estimated Monthly Cost**: $5-20 for moderate usage (1000 requests)
+- **CloudFront**: Free tier includes 1TB data transfer, then pay-per-use
+- **Estimated Monthly Cost**: $9-27 for moderate usage (1000 requests) including CloudFront
 
+## 8. Performance Enhancements
 
-## 8. Conclusion
+### 8.1 CloudFront Benefits
+- **Global Edge Network**: 400+ edge locations worldwide
+- **Reduced Latency**: Content served from nearest geographic location
+- **Bandwidth Optimization**: Automatic compression and optimization
+- **SSL Termination**: HTTPS encryption handled at edge locations
+- **Cache Control**: Configurable caching policies for different content types
+
+### 8.2 Application Optimizations
+- **Serverless Scaling**: Automatic scaling based on demand
+- **Efficient Storage**: S3 optimized for web content delivery
+- **Minimal Compute**: Lambda execution time optimization
+- **Regional Deployment**: Can be deployed in multiple AWS regions
+
+## 9. Future Enhancements
+
+- **Authentication**: Add user accounts and authentication
+- **Voice Customization**: Implement SSML for advanced speech control
+- **Batch Processing**: Support for multiple text inputs
+- **Analytics**: Track usage patterns and popular voices
+- **Custom Domain**: Route 53 integration with CloudFront
+- **Mobile App**: Native mobile applications for iOS/Android
+- **Advanced Caching**: Implement intelligent caching strategies
+
+## 10. Conclusion
 
 Voiceify successfully demonstrates modern serverless architecture principles while delivering practical text-to-speech functionality. The project showcases proper separation of concerns, infrastructure as code practices, and cloud-native development patterns.
 
-The implementation provides a solid foundation for learning AWS services and serverless computing concepts. The modular architecture enables easy extension and modification for future requirements.
+The implementation provides a solid foundation for learning AWS services and serverless computing concepts. The modular architecture enables easy extension and modification for future requirements, including optional CloudFront integration for enhanced global performance.
 
-Key learning outcomes include understanding serverless event-driven architecture, infrastructure automation with Terraform, and integration patterns between AWS services. The project serves as an excellent reference for building production-ready serverless applications.
+Key learning outcomes include understanding serverless event-driven architecture, infrastructure automation with Terraform, CDN integration patterns, and comprehensive AWS service integration. The project serves as an excellent reference for building production-ready serverless applications with global reach and optimal performance.
