@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="asset/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="asset/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="asset/favicon-16x16.png">
+    <link rel="manifest" href="asset/site.webmanifest">
+    <title>Voiceify - Text to Speech</title>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <header>
+        <div class="logo">
+            <h1>Voiceify</h1>
+            <p class="subtitle">Transform Your Text Into Beautiful Speech</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-card">
+            <div class="input-section">
+                <label for="text-input" class="input-label">✨ Enter Your Text</label>
+                <textarea 
+                    id="text-input" 
+                    placeholder="Type or paste your text here and watch it come to life with our AI-powered voices..."
+                ></textarea>
+            </div>
+
+            <div class="controls">
+                <div class="voice-section">
+                    <label for="voiceSelect" class="input-label">🎤 Choose Voice</label>
+                    <select id="voiceSelect">
+                        <option value="Joanna">Joanna (Female, US) 🇺🇸</option>
+                        <option value="Matthew">Matthew (Male, US) 🇺🇸</option>
+                        <option value="Nicole">Nicole (Female, Australian) 🇦🇺</option>
+                        <option value="Russell">Russell (Male, Australian) 🇦🇺</option>
+                        <option value="Amy">Amy (Female, British) 🇬🇧</option>
+                        <option value="Brian">Brian (Male, British) 🇬🇧</option>
+                    </select>
+                </div>
+                
+                <button id="generateBtn" class="generate-btn">
+                    🎵 Generate Audio
+                </button>
+            </div>
+
+            <div class="loading" id="loadingIndicator">
+                <div class="loading-spinner"></div>
+                <p>Converting your text to speech...</p>
+            </div>
+
+            <div class="error" id="errorMessage"></div>
+
+            <div class="audio-container" id="audioContainer">
+                <audio id="audioPlayer" controls preload="none"></audio>
+                <button id="downloadBtn" class="download-btn">
+                    📥 Download Audio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Voiceify. All rights reserved. Made by Almightyyawn🥱💤</p>
+    </footer>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

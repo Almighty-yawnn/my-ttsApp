@@ -1,0 +1,53 @@
+# Sensitive configuration files
+frontend/config.js
+terraform/terraform.tfvars
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+
+# AWS credentials and keys
+*.pem
+*.key
+.aws/
+
+# Terraform files
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/lambda_function.zip
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Node modules (if added later)
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Backup files
+*.bak
+*.backup

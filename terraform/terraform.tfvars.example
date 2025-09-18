@@ -1,0 +1,17 @@
+# AWS Credentials
+access_key = "your-aws-access-key-id"
+secret_key = "your-aws-secret-access-key"
+
+# AWS Region
+aws-region = "us-east-1"
+
+# S3 Bucket Names (must be globally unique)
+s3-bucket-name = "voiceify-audio-your-unique-suffix"
+frontend_bucket_name = "voiceify-frontend-your-unique-suffix"
+
+# Lambda Configuration
+lambda_function_name = "text_narrator_lambda"
+lambda_function_timeout = 300
+
+# API Gateway
+api_gateway_name = "text_narrator_api"
