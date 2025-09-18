@@ -16,10 +16,10 @@ Transform your text into natural-sounding speech using AWS cloud services. Voice
 
 ```markdown
 ### Basic Architecture
-![Alt text](./frontend/asset/architecture.png)
+![Alt text](frontend/asset/architecture.png)
 
 ### Enhanced with CloudFront CDN
-![Alt text](./frontend/asset/enh-architecture.png)
+![Alt text](frontend/asset/enh-architecture.png)
 
 
 ```
