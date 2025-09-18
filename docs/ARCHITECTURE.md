@@ -6,13 +6,12 @@ Voiceify implements a serverless architecture using AWS managed services for sca
 
 ## Architecture Diagram
 
-```markdown
 ### Basic Architecture
-![Alt text](./frontend/asset/architecture.png)
+![Alt text](frontend/asset/architecture.png)
 
 ### Enhanced with CloudFront CDN
-![Alt text](./frontend/asset/enh-architecture.png)
-```
+![Alt text](frontend/asset/enh-architecture.png)
+
 
 ## Component Details
 

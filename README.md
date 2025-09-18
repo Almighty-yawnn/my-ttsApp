@@ -13,7 +13,6 @@ Transform your text into natural-sounding speech using AWS cloud services. Voice
 
 ## 🏗️ Architecture
 
-
 ### Basic Architecture
 ![Alt text](frontend/asset/architecture.png)
 
