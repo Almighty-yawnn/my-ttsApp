@@ -136,7 +136,7 @@
                 }
             });
 
-            // Add some interactive feedback
+            // To Add some interactive feedback
             generateBtn.addEventListener('mouseenter', function() {
                 if (!this.disabled) {
                     this.style.transform = 'translateY(-2px) scale(1.02)';

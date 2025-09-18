@@ -174,7 +174,7 @@ aws s3 sync frontend/ s3://your-frontend-bucket-name/
 ```bash
 curl -X POST your-api-gateway-endpoint \
   -H "Content-Type: application/json" \
-  -d '{"text": "Hello world", "voice": "Joanna"}'
+  -d '{"text": "Welcome to Azubi Africa", "voice": "Matthew"}'
 ```
 
 **Step 2: Verify Frontend**
