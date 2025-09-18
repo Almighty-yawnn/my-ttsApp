@@ -84,7 +84,7 @@ Navigate to your S3 website endpoint or CloudFront domain and start converting t
 ## 📁 Project Structure
 
 ```
-voiceify/
+my-ttsApp/
 ├── frontend/
 │   ├── index.html          # Main web interface
 │   ├── style.css           # Styling and animations
@@ -156,16 +156,6 @@ Approximate monthly costs for moderate usage (1000 requests):
 - **Compression**: Gzip compression for faster transfers
 - **DDoS Protection**: Built-in security features
 
-## 🚀 Future Enhancements
-
-- [ ] User authentication and accounts
-- [ ] SSML support for advanced speech control
-- [ ] Batch text processing
-- [ ] Usage analytics dashboard
-- [ ] Mobile applications
-- [x] CloudFront CDN integration
-- [ ] Custom domain with Route 53
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -173,10 +163,6 @@ Approximate monthly costs for moderate usage (1000 requests):
 3. Commit changes (`git commit -m 'Add amazing feature'`)
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨💻 Author
 
