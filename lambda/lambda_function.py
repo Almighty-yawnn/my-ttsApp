@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     
     text = body.get('text')
     # Get voice from request, default to Kevin if none provided
-    voice_id = body.get('voice', 'Kevin')
+    voice_id = body.get('voice', 'Joanna')
     
     # Generate a unique filename using UUID
     filename = f"output/{uuid.uuid4()}.mp3"  # Better unique filename generation
@@ -29,17 +29,45 @@ def lambda_handler(event, context):
             "body": json.dumps({"error": "Missing text or bucket name"})
         }
     
+    # Language mapping for international voices
+    language_map = {
+        'Zhiyu': 'cmn-CN',
+        'Lea': 'fr-FR', 
+        'Remi': 'fr-FR',
+        'Vicki': 'de-DE',
+        'Daniel': 'de-DE',
+        'Bianca': 'it-IT',
+        'Adriano': 'it-IT',
+        'Kazuha': 'ja-JP',
+        'Takumi': 'ja-JP',
+        'Seoyeon': 'ko-KR',
+        'Lupe': 'es-ES',
+        'Pedro': 'es-ES',
+        'Kajal': 'hi-IN',
+        'Olivia': 'en-AU',
+        'Elin': 'sv-SE',
+        'Ayanda': 'en-ZA',
+    }
+    
+    language_code = language_map.get(voice_id, 'en-US')
+    
     polly_client = boto3.client('polly')
     s3_client = boto3.client('s3')
     
     try:
-        # Synthesize the speech using Amazon Polly with the selected voice
-        response = polly_client.synthesize_speech(
-            Text=text,
-            OutputFormat='mp3',
-            VoiceId=voice_id,  # Now using the voice from the request
-            Engine='neural'  # Specify the engine type (generative, long-form, neural, or standard)
-        )
+        # Synthesize speech with language code support
+        polly_params = {
+            'Text': text,
+            'OutputFormat': 'mp3',
+            'VoiceId': voice_id,
+            'Engine': 'neural'
+        }
+        
+        # Add language code for international voices
+        if voice_id in language_map:
+            polly_params['LanguageCode'] = language_code
+            
+        response = polly_client.synthesize_speech(**polly_params)
         
         if "AudioStream" not in response:
             raise Exception("No audio stream found in Polly response.")
@@ -52,7 +80,7 @@ def lambda_handler(event, context):
             ContentType="audio/mpeg"
         )
         
-        # Generate a pre-signed URL valid for 1 hour (3600 seconds)
+        # Generate a pre-signed URL valid for 15 mins (900 seconds)
         presigned_url = s3_client.generate_presigned_url(
             'get_object',
             Params={'Bucket': bucket_name, 'Key': filename},
@@ -61,7 +89,7 @@ def lambda_handler(event, context):
         
         return {
             "statusCode": 200,
-            "headers": cors_headers(),  # Added CORS headers
+            "headers": cors_headers(),
             "body": json.dumps({
                 "message": "Audio generated successfully!",
                 "audioUrl": presigned_url  # Changed key name to match frontend expectations
@@ -71,7 +99,7 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             "statusCode": 500,
-            "headers": cors_headers(),  # Added CORS headers
+            "headers": cors_headers(),
             "body": json.dumps({
                 "error": "Processing failed",
                 "message": str(e)
