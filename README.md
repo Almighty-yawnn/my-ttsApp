@@ -20,8 +20,6 @@ Transform your text into natural-sounding speech using AWS cloud services. Voice
 ![Alt text](frontend/asset/enh-architecture.png)
 
 
-```
-
 - **Frontend**: Static website hosted on S3 with optional CloudFront CDN
 - **API Gateway**: RESTful API endpoint
 - **Lambda**: Serverless compute for processing
